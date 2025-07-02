@@ -111,14 +111,39 @@ def get_date_range():
         return None, None
     return csv_data['order_date'].min(), csv_data['order_date'].max()
 
+def normalize_date_input(date_input):
+    """
+    Normalize date input to pandas Timestamp.
+    
+    Parameters
+    ----------
+    date_input : str, datetime.date, datetime.datetime, or pd.Timestamp
+        The date input to normalize
+        
+    Returns
+    -------
+    pd.Timestamp
+        Normalized pandas Timestamp
+    """
+    if isinstance(date_input, str):
+        return pd.to_datetime(date_input)
+    elif isinstance(date_input, datetime.date):
+        return pd.to_datetime(date_input)
+    elif isinstance(date_input, datetime.datetime):
+        return pd.to_datetime(date_input)
+    elif isinstance(date_input, pd.Timestamp):
+        return date_input
+    else:
+        # Try to convert whatever it is to datetime
+        return pd.to_datetime(date_input)
+
 def filter_data(start_date, end_date, category):
     """ Filter the sales data based on the start date, end date, and category. """
     global csv_data
 
-    if isinstance(start_date, str):
-        start_date = pd.to_datetime(start_date)
-    if isinstance(end_date, str):
-        end_date = pd.to_datetime(end_date)
+    # Normalize date inputs to pandas Timestamps
+    start_date = normalize_date_input(start_date)
+    end_date = normalize_date_input(end_date)
 
     df = csv_data.loc[
         (csv_data['order_date'] >= start_date) &
@@ -224,39 +249,54 @@ def create_matplotlib_figure(data, x_col, y_col, title, xlabel, ylabel, orientat
 
 def update_dashboard(start_date, end_date, category):
     """ Update the dashboard with the new data. """
-    total_revenue, total_orders, avg_order_value, top_category = get_dashboard_stats(start_date, end_date, category)
+    try:
+        total_revenue, total_orders, avg_order_value, top_category = get_dashboard_stats(start_date, end_date, category)
 
-    # Generate plots
-    revenue_data = get_plot_data(start_date, end_date, category)
-    category_data = get_revenue_by_category(start_date, end_date, category)
-    top_products_data = get_top_products(start_date, end_date, category)
+        # Generate plots
+        revenue_data = get_plot_data(start_date, end_date, category)
+        category_data = get_revenue_by_category(start_date, end_date, category)
+        top_products_data = get_top_products(start_date, end_date, category)
 
-    revenue_over_time_path = create_matplotlib_figure(
-        revenue_data, 'date', 'revenue',
-        "Revenue Over Time", "Date", "Revenue"
-    )
-    revenue_by_category_path = create_matplotlib_figure(
-        category_data, 'categories', 'revenue',
-        "Revenue by Category", "Category", "Revenue"
-    )
-    top_products_path = create_matplotlib_figure(
-        top_products_data, 'product_names', 'revenue',
-        "Top Products", "Revenue", "Product Name", orientation='h'
-    )
+        revenue_over_time_path = create_matplotlib_figure(
+            revenue_data, 'date', 'revenue',
+            "Revenue Over Time", "Date", "Revenue"
+        )
+        revenue_by_category_path = create_matplotlib_figure(
+            category_data, 'categories', 'revenue',
+            "Revenue by Category", "Category", "Revenue"
+        )
+        top_products_path = create_matplotlib_figure(
+            top_products_data, 'product_names', 'revenue',
+            "Top Products", "Revenue", "Product Name", orientation='h'
+        )
 
-    # Data table
-    table_data = get_data_for_table(start_date, end_date, category)
+        # Data table
+        table_data = get_data_for_table(start_date, end_date, category)
 
-    return (
-        revenue_over_time_path,
-        revenue_by_category_path,
-        top_products_path,
-        table_data,
-        total_revenue,
-        total_orders,
-        avg_order_value,
-        top_category
-    )
+        return (
+            revenue_over_time_path,
+            revenue_by_category_path,
+            top_products_path,
+            table_data,
+            total_revenue,
+            total_orders,
+            avg_order_value,
+            top_category
+        )
+    except Exception as e:
+        logger.error(f"Error in update_dashboard: {str(e)}")
+        # Return error placeholders
+        empty_plot = create_matplotlib_figure(pd.DataFrame(), 'x', 'y', "Error", "X", "Y")
+        return (
+            empty_plot,
+            empty_plot, 
+            empty_plot,
+            pd.DataFrame(),
+            0,
+            0,
+            0,
+            "Error"
+        )
 
 def create_dashboard():
     """ Create the dashboard to display the data in a Gradio interface. """
