@@ -16,10 +16,10 @@ A comprehensive sales analytics dashboard built with Gradio, featuring interacti
 ```
 gradio-dashboard/
 ├── sales_dashboard.py      # Main dashboard application
-├── sales_data_generator.py # Synthetic data generator
+├── generate_sales_data.py  # Synthetic data generator
 ├── requirements.txt        # Python dependencies
-├── README.md              # Project documentation
-└── sales_data.csv         # Generated sample data (created by generator)
+├── README.md               # Project documentation
+└── sales_data.csv          # Generated sample data (created by generator)
 ```
 
 ## 🚀 Quick Start
