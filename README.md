@@ -57,7 +57,7 @@ gradio-dashboard/
 
 1. **Generate sample data** (first time only)
    ```bash
-   python sales_data_generator.py
+   python generate_sales_data.py
    ```
    This creates a `sales_data.csv` file with 100,000 synthetic sales records.
 
