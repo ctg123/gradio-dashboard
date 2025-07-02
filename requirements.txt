@@ -1,0 +1,26 @@
+# Core data manipulation and analysis
+pandas>=2.0.0
+polars>=0.20.0
+numpy>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Web interface
+gradio>=4.0.0
+
+# Logging
+loguru>=0.7.0
+
+# Caching utilities
+cachetools>=5.3.0
+
+# Hugging Face integration
+huggingface-hub>=0.19.0
+
+# Date and time utilities (already part of stdlib but for explicit dependency tracking)
+python-dateutil>=2.8.0
+
+# Additional utilities
+pathlib2>=2.3.7; python_version < "3.4"
